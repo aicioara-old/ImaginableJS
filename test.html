@@ -60,23 +60,30 @@ function loadImage(input, callback) {
     reader.readAsDataURL(image);
 }
 
-function drawOnCanvas(img) {
-	canvas = $("#canvas")[0];
+function drawOnCanvas(img, canvas, finalWidth, finalHeight) {
+	finalWidth = finalWidth ? finalWidth : 40;
+	finalHeight = finalHeight ? finalHeight : 60;
 
-	var MAX_WIDTH = 40;
-	var MAX_HEIGHT = 60;
+	if (!canvas) {
+		canvas = $("<canvas>", {
+			style: "display: none",
+		});
+		$(document.body).append(canvas);
+		canvas = canvas[0];
+	}
+
 	var width = img.width;
 	var height = img.height;
 
 	if (width > height) {
-	  if (width > MAX_WIDTH) {
-	    height *= MAX_WIDTH / width;
-	    width = MAX_WIDTH;
+	  if (width > finalWidth) {
+	    height *= finalWidth / width;
+	    width = finalWidth;
 	  }
 	} else {
-	  if (height > MAX_HEIGHT) {
-	    width *= MAX_HEIGHT / height;
-	    height = MAX_HEIGHT;
+	  if (height > finalHeight) {
+	    width *= finalHeight / height;
+	    height = finalHeight;
 	  }
 	}
 	canvas.width = width;
@@ -84,58 +91,72 @@ function drawOnCanvas(img) {
 	var ctx = canvas.getContext("2d");
 	ctx.drawImage(img, 0, 0, width, height);
 
-	downloadImage();
+	return canvas;
+
 }
 
-function downloadImage() {
+function downloadImage(canvas, fileName) {
+	if (!canvas) {
+		throw Error("Canvas has to be specified");
+	}
 
-	console.log('called');
+	if (!fileName) {
+		fileName = "image.png";
+	}
 
 	var dataurl = canvas.toDataURL();
-	$("#final").attr('src', dataurl);
-
-	console.log(dataurl);
-
 	var anchor = $("<a>", {
 		href: dataurl,
 		download: "file.png",
-	}).html("Click me");
-	$(document.body).append(anchor);
-
-	// var url = dataurl.replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-	// window.open(url);
+	}).html("click")[0].click();
 }
 
 
-function mimic() {
-	console.log('mimicing');
+function sendImageToServer(input, imageName, server, callback) {
+	if (!input) {
+		throw Error("No arguments given");
+	}
 
-	var input = $("#mimi")[0];
+	if (!input.files) {
+		throw Error("Element given is not a file input")
+	}
+
+	if (!input.files[0]) {
+		throw Error("No files given");
+	}
+
+	if (!input.files[0].type.match(/image.*/)) {
+		throw Error("The file selected is not an image");
+	};
+
+	if (!imageName) {
+		imageName = "new_picture";
+	}
+
+	if (!server) {
+		throw Error("No server specified");
+	}
 
 	var data = new FormData();
-	data.append("new_picture", input.files[0]);
-
-	console.log(data);
+	data.append(imageName, input.files[0]);
 
 	jQuery.ajax({
-		url: "server.php",
+		url: server,
+	    type: "POST",
 	    data: data,
 	    cache: false,
 	    contentType: false,
 	    processData: false,
-	    type: "post",
-	    success: function(resp) {
-	    	console.log('a');
-	    }
-	})
-
-
+	    success: callback,
+	});
 }
 
 $("#input-new-picture").change(function() {
     loadImage(this, function(image) {
         $('#preview-image').attr('src', image.target.result);
-        drawOnCanvas($("#preview-image")[0]);
+        var canvas = drawOnCanvas($("#preview-image")[0], $("#canvas")[0]);
+        downloadImage(canvas);
+        sendImageToServer($("#input-new-picture")[0], "new_picture", "server.php");
     });
 });
 
