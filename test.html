@@ -40,7 +40,7 @@ $("#preview-image").click(function() {
 
 $("#input-new-picture").change(function() {
     // var img = loadImage(this);
-	imag = new Imag();
+	imag = Imaginable.getInstance();
 	var img = imag.load(this);
 
     $('#preview-image').attr('src', img.src);
