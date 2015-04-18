@@ -2,11 +2,24 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Test Page</title>
+
 	<link rel="stylesheet" href="test.css">
+
+	<script src="jquery.min.js"></script>
 	<script src="Imaginable.js"></script>
 </head>
 <body>
 
+
+<img src="" alt="Click Me" class="preview-image" id="preview-image">
+
+<input id="input-new-picture" name="new_picture" type="file" style="display: none">
+
+<img src="" alt="" id="final">
+
+<br>
+
+<canvas id="canvas" height="800" width="600"></canvas>
 
 
 <script>
@@ -14,6 +27,81 @@
 
 Imaginable.foo();
 
+$("#preview-image").click(function() {
+	$("#input-new-picture").click();
+});
+
+
+function loadImage(input, callback) {
+
+	if (!input || !input.files || !input.files[0]) {
+		throw Error("No files given");
+	}
+
+	if (!input.files[0].type.match(/image.*/)) {
+		throw Error("The file selected is not an image");
+	};
+
+	var image = input.files[0];
+
+    var reader = new FileReader();
+    reader.onload = callback;
+    reader.readAsDataURL(image);
+}
+
+function drawOnCanvas(img) {
+	canvas = $("#canvas")[0];
+
+	var MAX_WIDTH = 40;
+	var MAX_HEIGHT = 60;
+	var width = img.width;
+	var height = img.height;
+
+	if (width > height) {
+	  if (width > MAX_WIDTH) {
+	    height *= MAX_WIDTH / width;
+	    width = MAX_WIDTH;
+	  }
+	} else {
+	  if (height > MAX_HEIGHT) {
+	    width *= MAX_HEIGHT / height;
+	    height = MAX_HEIGHT;
+	  }
+	}
+	canvas.width = width;
+	canvas.height = height;
+	var ctx = canvas.getContext("2d");
+	ctx.drawImage(img, 0, 0, width, height);
+
+	downloadImage();
+}
+
+function downloadImage() {
+
+	console.log('called');
+
+	var dataurl = canvas.toDataURL();
+	$("#final").attr('src', dataurl);
+
+	console.log(dataurl);
+
+	var anchor = $("<a>", {
+		href: dataurl,
+		download: "file.png",
+	}).html("Click me");
+	$(document.body).append(anchor);
+
+	// var url = dataurl.replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+	// window.open(url);
+}
+
+
+$("#input-new-picture").change(function() {
+    loadImage(this, function(image) {
+        $('#preview-image').attr('src', image.target.result);
+        drawOnCanvas($("#preview-image")[0]);
+    });
+});
 
 
 </script>
