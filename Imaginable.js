@@ -1,4 +1,4 @@
-var Main = (function() {
+var Imaginable = (function() {
 
 
 	var foo = function() {
