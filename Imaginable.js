@@ -5,13 +5,17 @@ var Imaginable = (function() {
     }
 
     function Imag(input) {
+        // Instance variables
+        this.img = null;
+        this.input = null;
+        this.canvas = null;
+
         if (input) {
             this.loadImage(input);
         }
     }
 
     Imag.prototype.load = function(input) {
-
         if (!input || !input.files || !input.files[0]) {
             throw Error("No files given");
         }
@@ -24,6 +28,8 @@ var Imaginable = (function() {
         this.img.src = window.URL.createObjectURL(input.files[0]);
 
         this.input = input;
+
+        $(document.body).append($(this.img));
 
         return this.img;
     }
@@ -62,7 +68,6 @@ var Imaginable = (function() {
         ctx.drawImage(this.img, 0, 0, width, height);
 
         return this.canvas;
-
     }
 
     Imag.prototype.download = function(fileName) {
@@ -80,7 +85,6 @@ var Imaginable = (function() {
             download: "file.png",
         }).html("click")[0].click();
     }
-
 
     Imag.prototype.sendToServer = function(server, imageName, callback) {
         if (!this.input) {
