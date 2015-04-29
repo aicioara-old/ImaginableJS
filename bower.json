@@ -1,0 +1,19 @@
+{
+  "name": "Imaginable",
+  "version": "0.1",
+  "homepage": "https://github.com/aicioara/ImaginableJS",
+  "authors": [
+    "aicioara <primulandrei@yahoo.com>"
+  ],
+  "description": "HTML5 Image Editing",
+  "main": "Imaginable.js",
+  "keywords": [
+    "image",
+    "manipulation",
+    "edit"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~2.1.3"
+  }
+}
