@@ -6,13 +6,25 @@ var Imaginable = (function() {
 
     function Imag(input) {
         // Instance variables
-        this.img = null;
+        this.image = null;
         this.input = null;
         this.canvas = null;
+
+        this.callbackList = [];
 
         if (input) {
             this.loadImage(input);
         }
+    }
+
+    Imag.prototype.executeCallbacks = function() {
+        this.callbackList.forEach(function(elem) {
+            var callback = elem[0];
+            var _this = elem[1];
+            elem.splice(0, 2);
+            callback.apply(_this, elem);
+        });
+
     }
 
     Imag.prototype.load = function(input) {
@@ -24,17 +36,30 @@ var Imaginable = (function() {
             throw Error("The file selected is not an image");
         };
 
-        this.img = document.createElement('img');
-        this.img.src = window.URL.createObjectURL(input.files[0]);
+        this.image = document.createElement('img');
+        this.image.src = window.URL.createObjectURL(input.files[0]);
 
         this.input = input;
 
-        $(document.body).append($(this.img));
+        var _this = this;
+        this.image.onload = function() {
+            _this.executeCallbacks();
+        }
 
-        return this.img;
+        return this.image;
     }
 
+    /**
+     * Asynchronous
+     */
     Imag.prototype.drawOnCanvas = function(canvas, finalWidth, finalHeight) {
+
+        var _this = this;
+        if (!this.image.complete) {
+            this.callbackList.push([_this.drawOnCanvas, _this, canvas, finalWidth, finalHeight]);
+            return this.canvas;
+        }
+
         finalWidth = finalWidth ? finalWidth : 40;
         finalHeight = finalHeight ? finalHeight : 60;
 
@@ -48,8 +73,8 @@ var Imaginable = (function() {
 
         this.canvas = canvas;
 
-        var width = this.img.width;
-        var height = this.img.height;
+        var width = this.image.width;
+        var height = this.image.height;
 
         if (width > height) {
           if (width > finalWidth) {
@@ -65,18 +90,24 @@ var Imaginable = (function() {
         this.canvas.width = width;
         this.canvas.height = height;
         var ctx = this.canvas.getContext("2d");
-        ctx.drawImage(this.img, 0, 0, width, height);
+        ctx.drawImage(this.image, 0, 0, width, height);
 
         return this.canvas;
     }
 
     Imag.prototype.download = function(fileName) {
-        if (!this.canvas) {
-            throw Error("Canvas has not been created yet");
-        }
-
         if (!fileName) {
             fileName = "image.png";
+        }
+
+        var _this = this;
+        if (!this.image.complete) {
+            this.callbackList.push([_this.download, _this, fileName]);
+            return;
+        }
+
+        if (!this.canvas) {
+            throw Error("Canvas has not been created yet");
         }
 
         var dataurl = this.canvas.toDataURL();
@@ -87,6 +118,12 @@ var Imaginable = (function() {
     }
 
     Imag.prototype.sendToServer = function(server, imageName, callback) {
+
+        var _this = this;
+        if (!this.image.complete) {
+            this.callbackList.push([_this.sendToServer, _this, server, imageName, callback]);
+        }
+
         if (!this.input) {
             throw Error("No arguments given");
         }

@@ -35,11 +35,11 @@ $("#input-new-picture").change(function() {
 	imag = Imaginable.getInstance();
 	var img = imag.load(this);
 
-    $('#preview-image').attr('src', img.src);
+    // $('#preview-image').attr('src', img.src);
     var canvas = imag.drawOnCanvas($("#canvas")[0]);
     imag.download();
 
-    imag.sendToServer("server.php", "new_picture");
+    // imag.sendToServer("server.php", "new_picture");
 });
 
 
