@@ -34,6 +34,9 @@ var Imaginable = (function() {
         this.input = null;
         this.canvas = null;
 
+        this.height = 0;
+        this.width = 0;
+
         this.callbackList = [];
 
         if (input) {
@@ -58,9 +61,12 @@ var Imaginable = (function() {
 
     Imag.prototype.onImageReady = function(callback, _this, image) {
         if (this.image && this.image.complete) {
+            this.height = this.image.height;
+            this.width = this.image.width;
             callback(this);
         } else {
-            this.callbackList.push([callback, _this, image]);
+            var _this = this;
+            this.callbackList.push([_this.onImageReady, _this, callback, _this, image]);
         }
     }
 
@@ -87,54 +93,46 @@ var Imaginable = (function() {
     }
 
     /**
-     * Asynchronous
+     * Keeps aspect ratio
      */
-    Imag.prototype.drawOnCanvas = function(canvas, finalWidth, finalHeight) {
-        if (!this.image || !this.image.complete) {
-            console.error("Cannot drawOnCanvas an image which was not loaded yet");
-        }
+    Imag.prototype.resize = function(height, width) {
+        var imageHeight = this.image.height;
+        var imageWidth = this.image.width;
 
-        finalWidth = finalWidth ? finalWidth : 40;
-        finalHeight = finalHeight ? finalHeight : 60;
+        height = height ? height : imageHeight;
+        width = width ? width : imageWidth;
 
-        if (!canvas) {
-            canvas = $("<canvas>", {
-                style: "display: none",
-            });
-            $(document.body).append(canvas);
-            canvas = canvas[0];
-        }
-
-        this.canvas = canvas;
-
-        var width = this.image.width;
-        var height = this.image.height;
-
-        if (width > height) {
-          if (width > finalWidth) {
-            height *= finalWidth / width;
-            width = finalWidth;
+        if (imageWidth > imageHeight) {
+          if (imageWidth > finalWidth) {
+            imageHeight *= finalWidth / imageWidth;
+            imageWidth = finalWidth;
           }
         } else {
-          if (height > finalHeight) {
-            width *= finalHeight / height;
-            height = finalHeight;
+          if (imageHeight > height) {
+            imageWidth *= height / imageHeight;
+            imageHeight = height;
           }
         }
-        this.canvas.width = width;
-        this.canvas.height = height;
-        var ctx = this.canvas.getContext("2d");
-        ctx.drawImage(this.image, 0, 0, width, height);
+        this.height = imageHeight;
+        this.width = imageWidth;
 
-        return this.canvas;
+        this.onRedraw();
     }
 
     Imag.prototype.synchronizeWithCanvas = function(canvas) {
-        this.drawOnCanvas($(canvas)[0]);
+        this.canvas = $(canvas)[0];
+        this.onRedraw();
     }
 
     Imag.prototype.onRedraw = function() {
+        if (!this.canvas) {
+            return;
+        }
 
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        var ctx = this.canvas.getContext("2d");
+        ctx.drawImage(this.image, 0, 0, this.width, this.height);
     }
 
     Imag.prototype.download = function(fileName) {
@@ -158,7 +156,7 @@ var Imaginable = (function() {
         }).html("click")[0].click();
     }
 
-    Imag.prototype.sendToServer = function(server, imageName, callback) {
+    Imag.prototype.prepareForServer = function(imageName) {
         if (!this.image || !this.image.complete) {
             console.error("Cannot drawOnCanvas an image which was not loaded yet");
         }
@@ -180,7 +178,7 @@ var Imaginable = (function() {
         };
 
         if (!imageName) {
-            imageName = "new_picture";
+            imageName = "new_image";
         }
 
         if (!server) {
@@ -192,15 +190,17 @@ var Imaginable = (function() {
         dataURL = this.canvas.toDataURL("image/jpeg");
         data.append(imageName, dataURLToFile(dataURL));
 
-        jQuery.ajax({
-            url: server,
-            type: "POST",
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: callback,
-        });
+        return data;
+
+        // jQuery.ajax({
+        //     url: server,
+        //     type: "POST",
+        //     data: data,
+        //     cache: false,
+        //     contentType: false,
+        //     processData: false,
+        //     success: callback,
+        // });
     }
 
     /**
