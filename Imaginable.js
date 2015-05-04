@@ -29,6 +29,11 @@ var Imaginable = (function() {
         }
     }
 
+    /**
+     * Executes the callbacks queued in te callabckList in the order they were pushed
+     * the format of a callback is
+     * [functionName, thisContext, args...]
+     */
     Imag.prototype.executeCallbacks = function() {
         this.callbackList.forEach(function(elem) {
             var callback = elem[0];
@@ -36,7 +41,6 @@ var Imaginable = (function() {
             elem.splice(0, 2);
             callback.apply(_this, elem);
         });
-
     }
 
     Imag.prototype.load = function(input) {
