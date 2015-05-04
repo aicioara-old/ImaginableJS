@@ -4,6 +4,18 @@ var Imaginable = (function() {
         return new Imag();
     }
 
+    // http://stackoverflow.com/questions/19032406/convert-html5-canvas-into-file-to-be-uploaded
+    var dataURLToFile = function(dataURL) {
+        var blobBin = atob(dataURL.split(',')[1]);
+        var array = [];
+        for(var i = 0; i < blobBin.length; i++) {
+            array.push(blobBin.charCodeAt(i));
+        }
+        var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
+
+        return file;
+    }
+
     function Imag(input) {
         // Instance variables
         this.image = null;
@@ -110,6 +122,7 @@ var Imaginable = (function() {
             throw Error("Canvas has not been created yet");
         }
 
+        //TODO: remove the click HTML text
         var dataurl = this.canvas.toDataURL();
         var anchor = $("<a>", {
             href: dataurl,
@@ -122,6 +135,7 @@ var Imaginable = (function() {
         var _this = this;
         if (!this.image.complete) {
             this.callbackList.push([_this.sendToServer, _this, server, imageName, callback]);
+            return;
         }
 
         if (!this.input) {
@@ -149,7 +163,9 @@ var Imaginable = (function() {
         }
 
         var data = new FormData();
-        data.append(imageName, this.input.files[0]);
+
+        dataURL = this.canvas.toDataURL("image/jpeg");
+        data.append(imageName, dataURLToFile(dataURL));
 
         jQuery.ajax({
             url: server,

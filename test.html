@@ -37,9 +37,9 @@ $("#input-new-picture").change(function() {
 
     // $('#preview-image').attr('src', img.src);
     var canvas = imag.drawOnCanvas($("#canvas")[0]);
-    imag.download();
+    // imag.download();
 
-    // imag.sendToServer("server.php", "new_picture");
+    imag.sendToServer("server.php", "new_picture");
 });
 
 
