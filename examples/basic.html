@@ -17,34 +17,30 @@
 
 <script>
 
-
-
-var instance = Imaginable.getInstance();
-
-$("#input-new-picture").change(function() {
-	var instance = Imaginable.getInstance(this);
-});
-
-
 Imagibable.onImageLoad("#input-new-picture", function(instance) {
-	instance.drawOnCanvas($("#canvas")[0]);
-
 
 	image.synchronizeWithCanvas("#canvas");
 
 	image.resize(40, 50);
 	image.grayscale();
 
-	image.shrinkToFilesize(400, "kb");
+	image.shrinkToFilesize(400);
 
     var a1 = $("<a>").html("DOWNLOAD").click(function() {
     	instance.download()
     });
+
+    var inp = $("<input>", {
+    	id: "server-name-input"
+    })
+
     var a2 = $("<a>").html("SEND TO SERVER").click(function() {
-	    instance.sendToServer("server.php", "new_picture");
+    	var serverName = inp.val();
+    	var imageName = "new_picture"
+	    instance.sendToServer(serverName, imageName);
     });
 
-    $("#buttons").append(a1).append($("<br>")).append(a2);
+    $("#buttons").append(a1).append($("<br>")).append(inp).append(a2);
 });
 
 
