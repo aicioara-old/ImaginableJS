@@ -23,7 +23,9 @@ Imaginable.onImageLoad("#input-new-picture", function(instance) {
 
 	// instance.resize(1000, 1000);
 
-	// instance.shrinkToFilesize(400);
+	instance.shrinkToFileSize(400);
+	console.log(instance.getFileSize());
+
 
     var a1 = $("<a>").html("DOWNLOAD").click(function() {
     	instance.download()

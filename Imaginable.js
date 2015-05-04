@@ -156,6 +156,16 @@ var Imaginable = (function() {
         }).html("click")[0].click();
     }
 
+    Imag.prototype.getFileSize = function() {
+        var dataURL = this.canvas.toDataURL();
+        var base64Image = dataURLToFile(dataURL);
+        return base64Image.size;
+    }
+
+    Imag.prototype.shrinkToFileSize = function(newSize) {
+
+    }
+
     Imag.prototype.prepareForServer = function(imageName) {
         if (!this.image || !this.image.complete) {
             console.error("Cannot drawOnCanvas an image which was not loaded yet");
