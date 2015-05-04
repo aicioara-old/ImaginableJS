@@ -11,16 +11,11 @@
 <body>
 
 
-<img src="" alt="Click Me" class="preview-image" id="preview-image">
-
-<input id="input-new-picture" name="new_picture" type="file" style="display: none">
-
-<img src="" alt="" id="final">
-
-<br>
-
-<canvas id="canvas"></canvas>
-
+<input id="input-new-picture" name="new_picture" type="file">
+<div>
+	<canvas id="canvas"></canvas>
+</div>
+<div id="buttons"></div>
 
 <script>
 
@@ -31,24 +26,24 @@ $("#preview-image").click(function() {
 
 
 $("#input-new-picture").change(function() {
-    // var img = loadImage(this);
 	imag = Imaginable.getInstance();
 	var img = imag.load(this);
 
-    // $('#preview-image').attr('src', img.src);
     var canvas = imag.drawOnCanvas($("#canvas")[0]);
-    // imag.download();
 
-    imag.sendToServer("server.php", "new_picture");
+
+    var a1 = $("<a>").html("DOWNLOAD").click(function() {
+    	imag.download()
+    });
+    var a2 = $("<a>").html("SEND TO SERVER").click(function() {
+	    imag.sendToServer("server.php", "new_picture");
+    });
+
+    $("#buttons").append(a1).append($("<br>")).append(a2);
+
 });
 
-
-
-
 </script>
-
-
-
 
 </body>
 </html>
