@@ -1,7 +1,16 @@
 var Imaginable = (function() {
 
-    var getInstance = function() {
-        return new Imag();
+    /**
+     * @arg {input} <input> DOM element, or the ID (prefixed by #)
+     * @arg {callback} function(Imag) which will be called having the
+     * imag as argument
+     */
+    var onImageLoad = function(input, callback) {
+        input = $(input);
+        $(input).change(function() {
+            var imag = new Imag(this);
+            imag.onImageReady(callback, this, imag);
+        });
     }
 
     // http://stackoverflow.com/questions/19032406/convert-html5-canvas-into-file-to-be-uploaded
@@ -16,6 +25,9 @@ var Imaginable = (function() {
         return file;
     }
 
+    /**
+     * Wrapper around the image itself
+     */
     function Imag(input) {
         // Instance variables
         this.image = null;
@@ -25,11 +37,14 @@ var Imaginable = (function() {
         this.callbackList = [];
 
         if (input) {
-            this.loadImage(input);
+            this.load(input);
         }
     }
 
     /**
+     *
+     * @deprecated
+     *
      * Executes the callbacks queued in te callabckList in the order they were pushed
      * the format of a callback is
      * [functionName, thisContext, args...]
@@ -41,6 +56,14 @@ var Imaginable = (function() {
             elem.splice(0, 2);
             callback.apply(_this, elem);
         });
+    }
+
+    Imag.prototype.onImageReady = function(callback, _this, image) {
+        if (this.image && this.image.complete) {
+            callback(this);
+        } else {
+            this.callbackList.push([callback, _this, image]);
+        }
     }
 
     Imag.prototype.load = function(input) {
@@ -69,11 +92,8 @@ var Imaginable = (function() {
      * Asynchronous
      */
     Imag.prototype.drawOnCanvas = function(canvas, finalWidth, finalHeight) {
-
-        var _this = this;
-        if (!this.image.complete) {
-            this.callbackList.push([_this.drawOnCanvas, _this, canvas, finalWidth, finalHeight]);
-            return this.canvas;
+        if (!this.image || !this.image.complete) {
+            console.error("Cannot drawOnCanvas an image which was not loaded yet");
         }
 
         finalWidth = finalWidth ? finalWidth : 40;
@@ -112,14 +132,12 @@ var Imaginable = (function() {
     }
 
     Imag.prototype.download = function(fileName) {
-        if (!fileName) {
-            fileName = "image.png";
+        if (!this.image || !this.image.complete) {
+            console.error("Cannot drawOnCanvas an image which was not loaded yet");
         }
 
-        var _this = this;
-        if (!this.image.complete) {
-            this.callbackList.push([_this.download, _this, fileName]);
-            return;
+        if (!fileName) {
+            fileName = "image.png";
         }
 
         if (!this.canvas) {
@@ -135,11 +153,8 @@ var Imaginable = (function() {
     }
 
     Imag.prototype.sendToServer = function(server, imageName, callback) {
-
-        var _this = this;
-        if (!this.image.complete) {
-            this.callbackList.push([_this.sendToServer, _this, server, imageName, callback]);
-            return;
+        if (!this.image || !this.image.complete) {
+            console.error("Cannot drawOnCanvas an image which was not loaded yet");
         }
 
         if (!this.input) {
@@ -186,7 +201,7 @@ var Imaginable = (function() {
      * Public methods
      */
     return {
-        getInstance: getInstance,
+        onImageLoad: onImageLoad,
     };
 
 })();

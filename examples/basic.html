@@ -17,14 +17,16 @@
 
 <script>
 
-Imagibable.onImageLoad("#input-new-picture", function(instance) {
+Imaginable.onImageLoad("#input-new-picture", function(instance) {
 
-	image.synchronizeWithCanvas("#canvas");
+	instance.drawOnCanvas($("#canvas")[0]);
 
-	image.resize(40, 50);
-	image.grayscale();
+	// image.synchronizeWithCanvas("#canvas");
 
-	image.shrinkToFilesize(400);
+	// image.resize(40, 50);
+	// image.grayscale();
+
+	// image.shrinkToFilesize(400);
 
     var a1 = $("<a>").html("DOWNLOAD").click(function() {
     	instance.download()
@@ -35,9 +37,9 @@ Imagibable.onImageLoad("#input-new-picture", function(instance) {
     })
 
     var a2 = $("<a>").html("SEND TO SERVER").click(function() {
-    	var serverName = inp.val();
-    	var imageName = "new_picture"
-	    instance.sendToServer(serverName, imageName);
+    	// var serverName = inp.val();
+    	// var imageName = "new_picture"
+	    // instance.sendToServer(serverName, imageName);
     });
 
     $("#buttons").append(a1).append($("<br>")).append(inp).append(a2);
