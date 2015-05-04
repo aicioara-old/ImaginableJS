@@ -1,0 +1,46 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Test Page</title>
+
+	<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="../Imaginable.js"></script>
+</head>
+<body>
+
+
+<input id="input-new-picture" name="new_picture" type="file">
+<div>
+	<canvas id="canvas"></canvas>
+</div>
+<div id="buttons"></div>
+
+<script>
+
+
+
+var instance = Imaginable.getInstance();
+
+$("#input-new-picture").change(function() {
+	var instance = Imaginable.getInstance(this);
+});
+
+
+Imagibable.onImageLoad("#input-new-picture", function(instance) {
+	instance.drawOnCanvas($("#canvas")[0]);
+
+    var a1 = $("<a>").html("DOWNLOAD").click(function() {
+    	instance.download()
+    });
+    var a2 = $("<a>").html("SEND TO SERVER").click(function() {
+	    instance.sendToServer("server.php", "new_picture");
+    });
+
+    $("#buttons").append(a1).append($("<br>")).append(a2);
+});
+
+
+</script>
+
+</body>
+</html>
