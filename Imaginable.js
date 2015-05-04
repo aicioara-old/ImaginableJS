@@ -148,12 +148,11 @@ var Imaginable = (function() {
             throw Error("Canvas has not been created yet");
         }
 
-        //TODO: remove the click HTML text
         var dataurl = this.canvas.toDataURL();
         var anchor = $("<a>", {
             href: dataurl,
             download: "file.png",
-        }).html("click")[0].click();
+        })[0].click();
     }
 
     Imag.prototype.getFileSize = function() {
