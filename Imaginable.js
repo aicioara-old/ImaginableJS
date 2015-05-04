@@ -161,55 +161,13 @@ var Imaginable = (function() {
         return base64Image.size;
     }
 
-    Imag.prototype.shrinkToFileSize = function(newSize) {
-
-    }
-
-    Imag.prototype.prepareForServer = function(imageName) {
+    Imag.prototype.getBase64Image = function(imageName) {
         if (!this.image || !this.image.complete) {
             console.error("Cannot drawOnCanvas an image which was not loaded yet");
         }
 
-        if (!this.input) {
-            throw Error("No arguments given");
-        }
-
-        if (!this.input.files) {
-            throw Error("Element given is not a file input")
-        }
-
-        if (!this.input.files[0]) {
-            throw Error("No files given");
-        }
-
-        if (!this.input.files[0].type.match(/image.*/)) {
-            throw Error("The file selected is not an image");
-        };
-
-        if (!imageName) {
-            imageName = "new_image";
-        }
-
-        if (!server) {
-            throw Error("No server specified");
-        }
-
-        var data = new FormData();
-
         dataURL = this.canvas.toDataURL("image/jpeg");
-        data.append(imageName, dataURLToFile(dataURL));
-
-        return data;
-
-        // jQuery.ajax({
-        //     url: server,
-        //     type: "POST",
-        //     data: data,
-        //     cache: false,
-        //     contentType: false,
-        //     processData: false,
-        //     success: callback,
-        // });
+        return dataURLToFile(dataURL);
     }
 
     /**

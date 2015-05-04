@@ -23,7 +23,6 @@ Imaginable.onImageLoad("#input-new-picture", function(instance) {
 
 	// instance.resize(1000, 1000);
 
-	instance.shrinkToFileSize(400);
 	console.log(instance.getFileSize());
 
 
@@ -36,9 +35,24 @@ Imaginable.onImageLoad("#input-new-picture", function(instance) {
     })
 
     var a2 = $("<a>").html("SEND TO SERVER").click(function() {
-    	// var serverName = inp.val();
-    	// var imageName = "new_picture"
-	    // instance.sendToServer(serverName, imageName);
+    	var serverName = inp.val();
+    	var imageName = "new_image";
+
+		var formData = new FormData();
+    	var base64Image = instance.getBase64Image();
+    	formData.append(imageName, base64Image);
+
+        jQuery.ajax({
+            url: serverName,
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function() {
+            	console.log("Done")
+            }
+        });
     });
 
     $("#buttons").append(a1).append($("<br>")).append(inp).append(a2);
