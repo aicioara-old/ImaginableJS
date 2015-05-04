@@ -19,14 +19,12 @@
 
 Imaginable.onImageLoad("#input-new-picture", function(instance) {
 
-	instance.drawOnCanvas($("#canvas")[0]);
+	instance.synchronizeWithCanvas("#canvas");
 
-	// image.synchronizeWithCanvas("#canvas");
+	// instance.resize(40, 50);
+	// instance.grayscale();
 
-	// image.resize(40, 50);
-	// image.grayscale();
-
-	// image.shrinkToFilesize(400);
+	// instance.shrinkToFilesize(400);
 
     var a1 = $("<a>").html("DOWNLOAD").click(function() {
     	instance.download()

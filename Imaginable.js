@@ -43,8 +43,6 @@ var Imaginable = (function() {
 
     /**
      *
-     * @deprecated
-     *
      * Executes the callbacks queued in te callabckList in the order they were pushed
      * the format of a callback is
      * [functionName, thisContext, args...]
@@ -73,7 +71,7 @@ var Imaginable = (function() {
 
         if (!input.files[0].type.match(/image.*/)) {
             throw Error("The file selected is not an image");
-        };
+        }
 
         this.image = document.createElement('img');
         this.image.src = window.URL.createObjectURL(input.files[0]);
@@ -129,6 +127,14 @@ var Imaginable = (function() {
         ctx.drawImage(this.image, 0, 0, width, height);
 
         return this.canvas;
+    }
+
+    Imag.prototype.synchronizeWithCanvas = function(canvas) {
+        this.drawOnCanvas($(canvas)[0]);
+    }
+
+    Imag.prototype.onRedraw = function() {
+
     }
 
     Imag.prototype.download = function(fileName) {
