@@ -17,7 +17,7 @@ var Imaginable = (function() {
     var dataURLToFile = function(dataURL) {
         var blobBin = atob(dataURL.split(',')[1]);
         var array = [];
-        for(var i = 0; i < blobBin.length; i++) {
+        for (var i = 0; i < blobBin.length; i++) {
             array.push(blobBin.charCodeAt(i));
         }
         var file = new Blob([new Uint8Array(array)], {type: 'image/png'});
@@ -103,15 +103,15 @@ var Imaginable = (function() {
         width = width ? width : imageWidth;
 
         if (imageWidth > imageHeight) {
-          if (imageWidth > finalWidth) {
-            imageHeight *= finalWidth / imageWidth;
-            imageWidth = finalWidth;
-          }
+            if (imageWidth > finalWidth) {
+                imageHeight *= finalWidth / imageWidth;
+                imageWidth = finalWidth;
+            }
         } else {
-          if (imageHeight > height) {
-            imageWidth *= height / imageHeight;
-            imageHeight = height;
-          }
+            if (imageHeight > height) {
+                imageWidth *= height / imageHeight;
+                imageHeight = height;
+            }
         }
         this.height = imageHeight;
         this.width = imageWidth;
