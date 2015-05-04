@@ -29,6 +29,14 @@ $("#input-new-picture").change(function() {
 Imagibable.onImageLoad("#input-new-picture", function(instance) {
 	instance.drawOnCanvas($("#canvas")[0]);
 
+
+	image.synchronizeWithCanvas("#canvas");
+
+	image.resize(40, 50);
+	image.grayscale();
+
+	image.shrinkToFilesize(400, "kb");
+
     var a1 = $("<a>").html("DOWNLOAD").click(function() {
     	instance.download()
     });
