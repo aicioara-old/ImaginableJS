@@ -32,7 +32,7 @@ var Imaginable = (function() {
         // Instance variables
         this.image = null;
         this.input = null;
-        this.canvas = null;
+        this.canvas = $("<canvas>")[0];
 
         this.height = 0;
         this.width = 0;

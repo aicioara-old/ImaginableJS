@@ -11,7 +11,6 @@
 
 <input id="input-new-picture" name="new_picture" type="file">
 <div>
-	<canvas id="canvas"></canvas>
 </div>
 <div id="buttons"></div>
 
@@ -19,9 +18,11 @@
 
 Imaginable.onImageLoad("#input-new-picture", function(instance) {
 
-	instance.synchronizeWithCanvas("#canvas");
+	// instance.synchronizeWithCanvas("#canvas");
 
 	// instance.resize(1000, 1000);
+
+    instance.resize(60, 60);
 
 	console.log(instance.getFileSize());
 
